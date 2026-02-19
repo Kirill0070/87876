@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LARSON Boats - Аренда катеров</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .hero-gradient {
+            background: linear-gradient(135deg, #0c1929 0%, #1a3a5c 50%, #2d5a87 100%);
+        }
+        
+        .boat-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        
+        .boat-card {
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link {
+            position: relative;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #3b82f6;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .admin-panel {
+            display: none;
+        }
+        
+        .admin-panel.active {
+            display: block;
+        }
+        
+        .main-content {
+            display: block;
+        }
+        
+        .main-content.hidden {
+            display: none;
+        }
+        
+        .modal {
+            display: none;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+        
+        .booking-success {
+            animation: slideIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-slate-900 text-white fixed w-full z-50 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2 cursor-pointer" onclick="showSection('home')">
+                    <i class="fas fa-anchor text-blue-400 text-2xl"></i>
+                    <span class="text-xl font-bold">LARSON <span class="text-blue-400">BOATS</span></span>
+                </div>
+                
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="#" class="nav-link hover:text-blue-400 transition" onclick="showSection('home')">Главная</a>
+                    <a href="#" class="nav-link hover:text-blue-400 transition" onclick="showSection('catalog')">Каталог</a>
+                    <a href="#" class="nav-link hover:text-blue-400 transition" onclick="showSection('bookings')">Бронирования</a>
+                    <a href="#" class="nav-link hover:text-blue-400 transition" onclick="showSection('admin')">Админ панель</a>
+                </div>
+                
+                <button class="md:hidden text-2xl" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <!-- Mobile Menu -->
+            <div id="mobileMenu" class="hidden md:hidden mt-4 pb-4 space-y-3">
+                <a href="#" class="block hover:text-blue-400 transition" onclick="showSection('home')">Главная</a>
+                <a href="#" class="block hover:text-blue-400 transition" onclick="showSection('catalog')">Каталог</a>
+                <a href="#" class="block hover:text-blue-400 transition" onclick="showSection('bookings')">Бронирования</a>
+                <a href="#" class="block hover:text-blue-400 transition" onclick="showSection('admin')">Админ панель</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div id="mainContent" class="main-content pt-20">
+        
+        <!-- Home Section -->
+        <section id="home" class="section">
+            <!-- Hero -->
+            <div class="hero-gradient text-white py-24 md:py-32">
+                <div class="max-w-7xl mx-auto px-4">
+                    <div class="grid md:grid-cols-2 gap-12 items-center">
+                        <div>
+                            <h1 class="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+                                Аренда <span class="text-blue-400">катеров LARSON</span> в Санкт-Петербурге
+                            </h1>
+                            <p class="text-xl text-gray-300 mb-8">
+                                Эксклюзивные прогулки по Неве, Финскому заливу и Ладожскому озеру. 
+                                Роскошные катера, профессиональные капитаны и незабываемые впечатления.
+                            </p>
+                            <div class="flex flex-wrap gap-4">
+                                <button onclick="showSection('catalog')" class="bg-blue-500 hover:bg-blue-600 px-8 py-4 rounded-lg font-semibold transition transform hover:scale-105">
+                                    <i class="fas fa-ship mr-2"></i>Смотреть катера
+                                </button>
+                                <button onclick="openBookingModal()" class="border-2 border-white hover:bg-white hover:text-slate-900 px-8 py-4 rounded-lg font-semibold transition">
+                                    <i class="fas fa-calendar-alt mr-2"></i>Забронировать
+                                </button>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20">
+                                <div class="grid grid-cols-2 gap-6 text-center">
+                                    <div>
+                                        <div class="text-3xl font-bold text-blue-400">15+</div>
+                                        <div class="text-gray-300">Катеров</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-3xl font-bold text-blue-400">500+</div>
+                                        <div class="text-gray-300">Бронирований</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-3xl font-bold text-blue-400">10+</div>
+                                        <div class="text-gray-300">Лет опыта</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-3xl font-bold text-blue-400">5.0</div>
+                                        <div class="text-gray-300">Рейтинг</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features -->
+            <div class="py-16 bg-white">
+                <div class="max-w-7xl mx-auto px-4">
+                    <h2 class="text-3xl font-bold text-center mb-12 text-slate-800">Почему выбирают нас?</h2>
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <div class="text-center p-6 rounded-xl bg-slate-50 hover:bg-blue-50 transition">
+                            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-shield-alt text-blue-600 text-2xl"></i>
+                            </div>
+                            <h3 class="font-bold text-lg mb-2 text-slate-800">Безопасность</h3>
+                            <p class="text-gray-600">Все катера проходят технический осмотр и имеют полную страховку</p>
+                        </div>
+                        <div class="text-center p-6 rounded-xl bg-slate-50 hover:bg-blue-50 transition">
+                            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-star text-blue-600 text-2xl"></i>
+                            </div>
+                            <h3 class="font-bold text-lg mb-2 text-slate-800">Качество</h3>
+                            <p class="text-gray-600">Только лучшие модели LARSON с современным оборудованием</p>
+                        </div>
+                        <div class="text-center p-6 rounded-xl bg-slate-50 hover:bg-blue-50 transition">
+                            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-user-tie text-blue-600 text-2xl"></i>
+                            </div>
+                            <h3 class="font-bold text-lg mb-2 text-slate-800">Профессионалы</h3>
+                            <p class="text-gray-600">Опытные капитаны с многолетним стажем работы на воде</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Catalog Section -->
+        <section id="catalog" class="section hidden py-16 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-slate-800 mb-4">Каталог катеров</h2>
+                    <p class="text-gray-600 text-lg">Выберите идеальный катер для вашего отдыха</p>
+                </div>
+                
+                <!-- Filters -->
+                <div class="bg-white p-6 rounded-xl shadow-md mb-8 flex flex-wrap gap-4 items-center justify-between">
+                    <div class="flex flex-wrap gap-4">
+                        <select id="filterType" onchange="renderBoats()" class="border border-gray-300 rounded-lg px-4 py-2 bg-white">
+                            <option value="">Все типы</option>
+                            <option value="Sport">Спортивные</option>
+                            <option value="Fishing">Рыболовные</option>
+                            <option value="Cruiser">Круизные</option>
+                        </select>
+                        <select id="filterPrice" onchange="renderBoats()" class="border border-gray-300 rounded-lg px-4 py-2 bg-white">
+                            <option value="">Любая цена</option>
+                            <option value="0-10000">до 10 000 ₽/час</option>
+                            <option value="10000-20000">10 000 - 20 000 ₽/час</option>
+                            <option value="20000-100000">от 20 000 ₽/час</option>
+                        </select>
+                        <input type="text" id="searchBoat" onkeyup="renderBoats()" placeholder="Поиск по названию..." class="border border-gray-300 rounded-lg px-4 py-2 w-64">
+                    </div>
+                    <button onclick="openBookingModal()" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition">
+                        <i class="fas fa-calendar-plus mr-2"></i>Бронировать
+                    </button>
+                </div>
+                
+                <!-- Boats Grid -->
+                <div id="boatsGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Boats will be rendered here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Bookings Section -->
+        <section id="bookings" class="section hidden py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-slate-800 mb-4">Мои бронирования</h2>
+                    <p class="text-gray-600 text-lg">Управляйте вашими бронированиями</p>
+                </div>
+                
+                <div id="userBookings" class="space-y-6">
+                    <!-- Bookings will be rendered here -->
+                </div>
+                
+                <div id="noBookings" class="text-center py-16 hidden">
+                    <i class="fas fa-calendar-times text-6xl text-gray-300 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-500 mb-2">Нет активных бронирований</h3>
+                    <button onclick="showSection('catalog')" class="text-blue-500 hover:underline">Выбрать катер</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Admin Section -->
+        <section id="admin" class="section hidden py-16 bg-gray-100">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-slate-800 mb-4">Админ панель</h2>
+                    <p class="text-gray-600 text-lg">Управление данными системы</p>
+                </div>
+                
+                <!-- Admin Login -->
+                <div id="adminLogin" class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-lg">
+                    <h3 class="text-2xl font-bold mb-6 text-center text-slate-800">Вход в админ панель</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Логин</label>
+                            <input type="text" id="adminLoginInput" value="admin" class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Пароль</label>
+                            <input type="password" id="adminPasswordInput" value="admin123" class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                        </div>
+                        <button onclick="adminLogin()" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg font-semibold transition">
+                            Войти
+                        </button>
+                        <p class="text-xs text-gray-500 text-center">Для демо: admin / admin123</p>
+                    </div>
+                </div>
+                
+                <!-- Admin Panel -->
+                <div id="adminPanel" class="admin-panel">
+                    <!-- Admin Tabs -->
+                    <div class="bg-white rounded-xl shadow-md mb-8 overflow-hidden">
+                        <div class="flex flex-wrap border-b">
+                            <button onclick="showAdminTab('boats')" class="admin-tab px-6 py-4 font-medium hover:bg-gray-50 transition border-b-2 border-blue-500" data-tab="boats">
+                                <i class="fas fa-ship mr-2"></i>Катера
+                            </button>
+                            <button onclick="showAdminTab('bookings')" class="admin-tab px-6 py-4 font-medium hover:bg-gray-50 transition border-b-2 border-transparent" data-tab="bookings">
+                                <i class="fas fa-calendar-check mr-2"></i>Бронирования
+                            </button>
+                            <button onclick="showAdminTab('clients')" class="admin-tab px-6 py-4 font-medium hover:bg-gray-50 transition border-b-2 border-transparent" data-tab="clients">
+                                <i class="fas fa-users mr-2"></i>Клиенты
+                            </button>
+                            <button onclick="showAdminTab('crm')" class="admin-tab px-6 py-4 font-medium hover:bg-gray-50 transition border-b-2 border-transparent" data-tab="crm">
+                                <i class="fas fa-comments mr-2"></i>CRM
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Boats Management -->
+                    <div id="adminBoatsTab" class="admin-tab-content">
+                        <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+                            <h3 class="text-xl font-bold mb-4 text-slate-800">Добавить/Редактировать катер</h3>
+                            <form id="boatForm" class="grid md:grid-cols-2 gap-4">
+                                <input type="hidden" id="boatId">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Название</label>
+                                    <input type="text" id="boatName" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Модель</label>
+                                    <input type="text" id="boatModel" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Тип</label>
+                                    <select id="boatType" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                                        <option value="Sport">Спортивный</option>
+                                        <option value="Fishing">Рыболовный</option>
+                                        <option value="Cruiser">Круизный</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Цена за час (₽)</label>
+                                    <input type="number" id="boatPrice" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Вместимость (чел)</label>
+                                    <input type="number" id="boatCapacity" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">URL изображения</label>
+                                    <input type="url" id="boatImage" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Описание</label>
+                                    <textarea id="boatDescription" required rows="3" class="w-full border border-gray-300 rounded-lg px-4 py-2"></textarea>
+                                </div>
+                                <div class="md:col-span-2 flex gap-4">
+                                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition">
+                                        <i class="fas fa-save mr-2"></i>Сохранить
+                                    </button>
+                                    <button type="button" onclick="resetBoatForm()" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition">
+                                        <i class="fas fa-times mr-2"></i>Сбросить
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl shadow-md p-6">
+                            <h3 class="text-xl font-bold mb-4 text-slate-800">Список катеров</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead>
+                                        <tr class="bg-gray-100">
+                                            <th class="px-4 py-3 text-left">Изображение</th>
+                                            <th class="px-4 py-3 text-left">Название</th>
+                                            <th class="px-4 py-3 text-left">Модель</th>
+                                            <th class="px-4 py-3 text-left">Тип</th>
+                                            <th class="px-4 py-3 text-left">Цена/час</th>
+                                            <th class="px-4 py-3 text-left">Вместимость</th>
+                                            <th class="px-4 py-3 text-left">Действия</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="adminBoatsTable">
+                                        <!-- Boats will be rendered here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Bookings Management -->
+                    <div id="adminBookingsTab" class="admin-tab-content hidden">
+                        <div class="bg-white rounded-xl shadow-md p-6">
+                            <h3 class="text-xl font-bold mb-4 text-slate-800">Все бронирования</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead>
+                                        <tr class="bg-gray-100">
+                                            <th class="px-4 py-3 text-left">ID</th>
+                                            <th class="px-4 py-3 text-left">Клиент</th>
+                                            <th class="px-4 py-3 text-left">Катер</th>
+                                            <th class="px-4 py-3 text-left">Дата</th>
+                                            <th class="px-4 py-3 text-left">Время</th>
+                                            <th class="px-4 py-3 text-left">Сумма</th>
+                                            <th class="px-4 py-3 text-left">Статус</th>
+                                            <th class="px-4 py-3 text-left">Действия</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="adminBookingsTable">
+                                        <!-- Bookings will be rendered here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Clients Management -->
+                    <div id="adminClientsTab" class="admin-tab-content hidden">
+                        <div class="bg-white rounded-xl shadow-md p-6">
+                            <h3 class="text-xl font-bold mb-4 text-slate-800">Список клиентов</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead>
+                                        <tr class="bg-gray-100">
+                                            <th class="px-4 py-3 text-left">ID</th>
+                                            <th class="px-4 py-3 text-left">Имя</th>
+                                            <th class="px-4 py-3 text-left">Телефон</th>
+                                            <th class="px-4 py-3 text-left">Email</th>
+                                            <th class="px-4 py-3 text-left">Бронирований</th>
+                                            <th class="px-4 py-3 text-left">Общая сумма</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="adminClientsTable">
+                                        <!-- Clients will be rendered here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- CRM Management -->
+                    <div id="adminCrmTab" class="admin-tab-content hidden">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <!-- Customer Communications -->
+                            <div class="bg-white rounded-xl shadow-md p-6">
+                                <h3 class="text-xl font-bold mb-4 text-slate-800">Коммуникации с клиентами</h3>
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Выберите клиента</label>
+                                    <select id="crmClientSelect" class="w-full border border-gray-300 rounded-lg px-4 py-2" onchange="loadClientCommunications()">
+                                        <option value="">-- Выберите клиента --</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Тип коммуникации</label>
+                                    <select id="communicationType" class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                                        <option value="call">Звонок</option>
+                                        <option value="email">Email</option>
+                                        <option value="message">Сообщение</option>
+                                        <option value="meeting">Встреча</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Тема</label>
+                                    <input type="text" id="communicationSubject" class="w-full border border-gray-300 rounded-lg px-4 py-2" placeholder="Введите тему">
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Содержание</label>
+                                    <textarea id="communicationContent" rows="3" class="w-full border border-gray-300 rounded-lg px-4 py-2" placeholder="Введите содержание"></textarea>
+                                </div>
+                                
+                                <button onclick="addCommunication()" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg transition">
+                                    <i class="fas fa-paper-plane mr-2"></i>Добавить запись
+                                </button>
+                            </div>
+                            
+                            <!-- Communication History -->
+                            <div class="bg-white rounded-xl shadow-md p-6">
+                                <h3 class="text-xl font-bold mb-4 text-slate-800">История коммуникаций</h3>
+                                <div id="communicationHistory" class="space-y-4 max-h-96 overflow-y-auto">
+                                    <!-- Communications will be rendered here -->
+                                    <div class="text-center py-8 text-gray-500">
+                                        <i class="fas fa-comment-dots text-3xl mb-2"></i>
+                                        <p>Выберите клиента для просмотра истории</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Customer Segmentation -->
+                            <div class="lg:col-span-2 bg-white rounded-xl shadow-md p-6 mt-6">
+                                <h3 class="text-xl font-bold mb-4 text-slate-800">Сегментация клиентов</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div class="bg-blue-50 p-4 rounded-lg">
+                                        <div class="text-2xl font-bold text-blue-600" id="vipCount">0</div>
+                                        <div class="text-gray-700">VIP клиенты</div>
+                                        <div class="text-sm text-gray-500 mt-1">(Более 50,000 ₽)</div>
+                                    </div>
+                                    <div class="bg-green-50 p-4 rounded-lg">
+                                        <div class="text-2xl font-bold text-green-600" id="regularCount">0</div>
+                                        <div class="text-gray-700">Постоянные клиенты</div>
+                                        <div class="text-sm text-gray-500 mt-1">(Более 3 бронирований)</div>
+                                    </div>
+                                    <div class="bg-purple-50 p-4 rounded-lg">
+                                        <div class="text-2xl font-bold text-purple-600" id="newCount">0</div>
+                                        <div class="text-gray-700">Новые клиенты</div>
+                                        <div class="text-sm text-gray-500 mt-1">(Менее 3 бронирований)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-slate-900 text-white py-12 mt-16">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="grid md:grid-cols-4 gap-8">
+                    <div>
+                        <div class="flex items-center space-x-2 mb-4">
+                            <i class="fas fa-anchor text-blue-400 text-2xl"></i>
+                            <span class="text-xl font-bold">LARSON <span class="text-blue-400">BOATS</span></span>
+                        </div>
+                        <p class="text-gray-400">Аренда эксклюзивных катеров в Санкт-Петербурге и Ленинградской области.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold mb-4">Контакты</h4>
+                        <div class="space-y-2 text-gray-400">
+                            <p><i class="fas fa-phone mr-2"></i>+7 (812) 123-45-67</p>
+                            <p><i class="fas fa-envelope mr-2"></i>info@larsonboats.ru</p>
+                            <p><i class="fas fa-map-marker-alt mr-2"></i>Санкт-Петербург, Набережная</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold mb-4">Навигация</h4>
+                        <div class="space-y-2 text-gray-400">
+                            <a href="#" class="hover:text-blue-400 transition" onclick="showSection('home')">Главная</a><br>
+                            <a href="#" class="hover:text-blue-400 transition" onclick="showSection('catalog')">Каталог</a><br>
+                            <a href="#" class="hover:text-blue-400 transition" onclick="showSection('bookings')">Бронирования</a><br>
+                            <a href="#" class="hover:text-blue-400 transition" onclick="showSection('admin')">Админ панель</a>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold mb-4">Социальные сети</h4>
+                        <div class="flex space-x-4">
+                            <a href="#" class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center hover:bg-blue-500 transition">
+                                <i class="fab fa-vk"></i>
+                            </a>
+                            <a href="#" class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center hover:bg-blue-500 transition">
+                                <i class="fab fa-telegram"></i>
+                            </a>
+                            <a href="#" class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center hover:bg-pink-500 transition">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500">
+                    <p>&copy; 2024 LARSON BOATS. Все права защищены.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Booking Modal -->
+    <div id="bookingModal" class="modal fixed inset-0 bg-black/70 z-50 items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b flex justify-between items-center">
+                <h3 class="text-2xl font-bold text-slate-800">Бронирование катера</h3>
+                <button onclick="closeBookingModal()" class="text-gray-500 hover:text-gray-700 text-2xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <form id="bookingForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Выберите катер</label>
+                        <select id="bookingBoat" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                            <option value="">-- Выберите катер --</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Дата</label>
+                            <input type="date" id="bookingDate" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Время</label>
+                            <input type="time" id="bookingTime" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Длительность (часов)</label>
+                        <input type="number" id="bookingDuration" min="1" max="12" value="2" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Ваше имя</label>
+                        <input type="text" id="bookingName" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Телефон</label>
+                        <input type="tel" id="bookingPhone" required placeholder="+7 (XXX) XXX-XX-XX" class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" id="bookingEmail" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                    </div>
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <div class="flex justify-between items-center">
+                            <span class="font-medium text-slate-700">Итоговая стоимость:</span>
+                            <span id="bookingTotal" class="text-2xl font-bold text-blue-600">0 ₽</span>
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg font-semibold transition">
+                        <i class="fas fa-check mr-2"></i>Подтвердить бронирование
+                    </button>
+                </form>
+                <div id="bookingSuccess" class="hidden text-center py-8 booking-success">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-check text-green-500 text-3xl"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-slate-800 mb-2">Бронирование создано!</h4>
+                    <p class="text-gray-600">Мы свяжемся с вами для подтверждения.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal fixed inset-0 bg-black/70 z-50 items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-exclamation-triangle text-red-500 text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">Удалить элемент?</h3>
+                <p class="text-gray-600 mb-6">Это действие нельзя отменить.</p>
+                <div class="flex gap-4 justify-center">
+                    <button onclick="closeDeleteModal()" class="px-6 py-2 bg-gray-300 hover:bg-gray-400 rounded-lg transition">Отмена</button>
+                    <button id="confirmDeleteBtn" class="px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition">Удалить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data Storage
+        let boats = [
+            {
+                id: 1,
+                name: "LARSON LX 22",
+                model: "LX 22",
+                type: "Sport",
+                price: 15000,
+                capacity: 8,
+                image: "https://images.unsplash.com/photo-1566895298138-53b01c6cc89e?w=600&h=400&fit=crop",
+                description: "Спортивный катер с мощным двигателем, идеален для скоростных прогулок и водных видов спорта."
+            },
+            {
+                id: 2,
+                name: "LARSON FX 26",
+                model: "FX 26",
+                type: "Fishing",
+                price: 18000,
+                capacity: 6,
+                image: "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=600&h=400&fit=crop",
+                description: "Рыболовный катер с удобными местами для ловли и вместительным багажником для снастей."
+            },
+            {
+                id: 3,
+                name: "LARSON SE 30",
+                model: "SE 30",
+                type: "Cruiser",
+                price: 25000,
+                capacity: 12,
+                image: "https://images.unsplash.com/photo-1564507592333-c60657eea523?w=600&h=400&fit=crop",
+                description: "Премиальный круизный катер с каютой, кухней и всеми удобствами для длительных прогулок."
+            },
+            {
+                id: 4,
+                name: "LARSON TR 18",
+                model: "TR 18",
+                type: "Sport",
+                price: 12000,
+                capacity: 5,
+                image: "https://images.unsplash.com/photo-1559128010-7c1ad6e1b62a?w=600&h=400&fit=crop",
+                description: "Компактный спортивный катер для быстрых маневренных прогулок по акватории."
+            },
+            {
+                id: 5,
+                name: "LARSON HC 35",
+                model: "HC 35",
+                type: "Cruiser",
+                price: 35000,
+                capacity: 15,
+                image: "https://images.unsplash.com/photo-1580274455191-1c62238fa333?w=600&h=400&fit=crop",
+                description: "Хаускрафт-катер высшего класса с роскошным салоном, спальнями и полным комфортом."
+            },
+            {
+                id: 6,
+                name: "LARSON FISH 24",
+                model: "FISH 24",
+                type: "Fishing",
+                price: 16000,
+                capacity: 8,
+                image: "https://images.unsplash.com/photo-1515443961218-a51367888e4b?w=600&h=400&fit=crop",
+                description: "Профессиональный рыболовный катер с эхолотом, лебедкой и местами для рыбалки."
+            }
+        ];
+
+        let bookings = [];
+        let communications = [];
+        let deleteCallback = null;
+        let isAdminLoggedIn = false;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFromStorage();
+            renderBoats();
+            renderUserBookings();
+            setupBookingForm();
+            setupBoatForm();
+            setMinDate();
+        });
+
+        // Storage Functions
+        function saveToStorage() {
+            localStorage.setItem('larson_boats', JSON.stringify(boats));
+            localStorage.setItem('larson_bookings', JSON.stringify(bookings));
+            localStorage.setItem('larson_communications', JSON.stringify(communications));
+        }
+
+        function loadFromStorage() {
+            const savedBoats = localStorage.getItem('larson_boats');
+            const savedBookings = localStorage.getItem('larson_bookings');
+            const savedCommunications = localStorage.getItem('larson_communications');
+            if (savedBoats) boats = JSON.parse(savedBoats);
+            if (savedBookings) bookings = JSON.parse(savedBookings);
+            if (savedCommunications) communications = JSON.parse(savedCommunications);
+        }
+
+        // Navigation
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(sectionId).classList.remove('hidden');
+            
+            // Update mobile menu
+            document.getElementById('mobileMenu').classList.add('hidden');
+            
+            // Refresh content based on section
+            if (sectionId === 'catalog') {
+                renderBoats();
+                updateBookingSelect();
+            } else if (sectionId === 'bookings') {
+                renderUserBookings();
+            } else if (sectionId === 'admin') {
+                if (isAdminLoggedIn) {
+                    showAdminPanel();
+                } else {
+                    document.getElementById('adminLogin').classList.remove('hidden');
+                    document.getElementById('adminPanel').classList.remove('active');
+                }
+            }
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
+        }
+
+        // Boats Rendering
+        function renderBoats() {
+            const grid = document.getElementById('boatsGrid');
+            const filterType = document.getElementById('filterType').value;
+            const filterPrice = document.getElementById('filterPrice').value;
+            const searchTerm = document.getElementById('searchBoat').value.toLowerCase();
+
+            let filteredBoats = boats.filter(boat => {
+                if (filterType && boat.type !== filterType) return false;
+                if (searchTerm && !boat.name.toLowerCase().includes(searchTerm) && !boat.model.toLowerCase().includes(searchTerm)) return false;
+                if (filterPrice) {
+                    const [min, max] = filterPrice.split('-').map(Number);
+                    if (max && (boat.price < min || boat.price > max)) return false;
+                    if (!max && boat.price < min) return false;
+                }
+                return true;
+            });
+
+            if (filteredBoats.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-16">
+                        <i class="fas fa-search text-6xl text-gray-300 mb-4"></i>
+                        <h3 class="text-xl font-semibold text-gray-500">Катера не найдены</h3>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filteredBoats.map(boat => `
+                <div class="boat-card bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="relative">
+                        <img src="${boat.image}" alt="${boat.name}" class="w-full h-48 object-cover">
+                        <span class="absolute top-3 right-3 bg-blue-500 text-white text-xs px-3 py-1 rounded-full font-medium">
+                            ${getTypeLabel(boat.type)}
+                        </span>
+                    </div>
+                    <div class="p-5">
+                        <h3 class="text-xl font-bold text-slate-800 mb-1">${boat.name}</h3>
+                        <p class="text-sm text-gray-500 mb-3">${boat.model}</p>
+                        <p class="text-gray-600 text-sm mb-4 line-clamp-2">${boat.description}</p>
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="text-sm text-gray-500">
+                                <i class="fas fa-users mr-1"></i>${boat.capacity} чел.
+                            </div>
+                            <div class="text-lg font-bold text-blue-600">${boat.price.toLocaleString()} ₽/час</div>
+                        </div>
+                        <button onclick="openBookingModal(${boat.id})" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg transition font-medium">
+                            <i class="fas fa-calendar-plus mr-2"></i>Забронировать
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getTypeLabel(type) {
+            const labels = {
+                'Sport': 'Спортивный',
+                'Fishing': 'Рыболовный',
+                'Cruiser': 'Круизный'
+            };
+            return labels[type] || type;
+        }
+
+        // Booking Modal
+        function openBookingModal(boatId = null) {
+            updateBookingSelect();
+            if (boatId) {
+                document.getElementById('bookingBoat').value = boatId;
+                updateBookingTotal();
+            }
+            document.getElementById('bookingModal').classList.add('active');
+            document.getElementById('bookingForm').classList.remove('hidden');
+            document.getElementById('bookingSuccess').classList.add('hidden');
+        }
+
+        function closeBookingModal() {
+            document.getElementById('bookingModal').classList.remove('active');
+            document.getElementById('bookingForm').reset();
+            document.getElementById('bookingTotal').textContent = '0 ₽';
+        }
+
+        function updateBookingSelect() {
+            const select = document.getElementById('bookingBoat');
+            select.innerHTML = '<option value="">-- Выберите катер --</option>' +
+                boats.map(b => `<option value="${b.id}">${b.name} (${b.price.toLocaleString()} ₽/час)</option>`).join('');
+        }
+
+        function setupBookingForm() {
+            const form = document.getElementById('bookingForm');
+            const inputs = ['bookingBoat', 'bookingDuration'];
+            inputs.forEach(id => {
+                document.getElementById(id).addEventListener('change', updateBookingTotal);
+            });
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const boatId = parseInt(document.getElementById('bookingBoat').value);
+                const boat = boats.find(b => b.id === boatId);
+                const duration = parseInt(document.getElementById('bookingDuration').value);
+                
+                const booking = {
+                    id: Date.now(),
+                    boatId: boatId,
+                    boatName: boat.name,
+                    clientName: document.getElementById('bookingName').value,
+                    clientPhone: document.getElementById('bookingPhone').value,
+                    clientEmail: document.getElementById('bookingEmail').value,
+                    date: document.getElementById('bookingDate').value,
+                    time: document.getElementById('bookingTime').value,
+                    duration: duration,
+                    total: boat.price * duration,
+                    status: 'pending',
+                    createdAt: new Date().toISOString()
+                };
+
+                bookings.push(booking);
+                saveToStorage();
+
+                document.getElementById('bookingForm').classList.add('hidden');
+                document.getElementById('bookingSuccess').classList.remove('hidden');
+
+                setTimeout(() => {
+                    closeBookingModal();
+                    showSection('bookings');
+                }, 2000);
+            });
+        }
+
+        function updateBookingTotal() {
+            const boatId = parseInt(document.getElementById('bookingBoat').value);
+            const duration = parseInt(document.getElementById('bookingDuration').value) || 0;
+            const boat = boats.find(b => b.id === boatId);
+            
+            if (boat) {
+                const total = boat.price * duration;
+                document.getElementById('bookingTotal').textContent = total.toLocaleString() + ' ₽';
+            } else {
+                document.getElementById('bookingTotal').textContent = '0 ₽';
+            }
+        }
+
+        function setMinDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('bookingDate').setAttribute('min', today);
+        }
+
+        // User Bookings
+        function renderUserBookings() {
+            const container = document.getElementById('userBookings');
+            const noBookings = document.getElementById('noBookings');
+
+            if (bookings.length === 0) {
+                container.innerHTML = '';
+                noBookings.classList.remove('hidden');
+                return;
+            }
+
+            noBookings.classList.add('hidden');
+            container.innerHTML = bookings.map(booking => {
+                const statusColors = {
+                    'pending': 'bg-yellow-100 text-yellow-800',
+                    'confirmed': 'bg-green-100 text-green-800',
+                    'cancelled': 'bg-red-100 text-red-800'
+                };
+                const statusLabels = {
+                    'pending': 'В ожидании',
+                    'confirmed': 'Подтверждено',
+                    'cancelled': 'Отменено'
+                };
+
+                return `
+                    <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-500">
+                        <div class="flex flex-wrap justify-between items-start gap-4">
+                            <div>
+                                <h4 class="text-xl font-bold text-slate-800">${booking.boatName}</h4>
+                                <p class="text-gray-600 mt-1">
+                                    <i class="fas fa-calendar mr-2"></i>${formatDate(booking.date)} в ${booking.time}
+                                    <span class="mx-2">•</span>
+                                    <i class="fas fa-clock mr-1"></i>${booking.duration} часов
+                                </p>
+                                <p class="text-gray-500 text-sm mt-1">
+                                    <i class="fas fa-user mr-1"></i>${booking.clientName}
+                                </p>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-2xl font-bold text-blue-600">${booking.total.toLocaleString()} ₽</div>
+                                <span class="inline-block mt-2 px-3 py-1 rounded-full text-sm font-medium ${statusColors[booking.status]}">
+                                    ${statusLabels[booking.status]}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+        }
+
+        // Admin Functions
+        function adminLogin() {
+            const login = document.getElementById('adminLoginInput').value;
+            const password = document.getElementById('adminPasswordInput').value;
+
+            if (login === 'admin' && password === 'admin123') {
+                isAdminLoggedIn = true;
+                document.getElementById('adminLogin').classList.add('hidden');
+                showAdminPanel();
+            } else {
+                alert('Неверный логин или пароль!');
+            }
+        }
+
+        function showAdminPanel() {
+            document.getElementById('adminPanel').classList.add('active');
+            renderAdminBoats();
+            renderAdminBookings();
+            renderAdminClients();
+        }
+
+        function showAdminTab(tab) {
+            document.querySelectorAll('.admin-tab-content').forEach(t => t.classList.add('hidden'));
+            document.getElementById('admin' + tab.charAt(0).toUpperCase() + tab.slice(1) + 'Tab').classList.remove('hidden');
+            
+            document.querySelectorAll('.admin-tab').forEach(t => {
+                t.classList.remove('border-blue-500');
+                t.classList.add('border-transparent');
+            });
+            document.querySelector(`[data-tab="${tab}"]`).classList.remove('border-transparent');
+            document.querySelector(`[data-tab="${tab}"]`).classList.add('border-blue-500');
+            
+            // Load additional data for CRM tab
+            if (tab === 'crm') {
+                renderClientSelect();
+                renderCustomerSegments();
+            }
+        }
+
+        // Admin Boats
+        function setupBoatForm() {
+            document.getElementById('boatForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const boatId = document.getElementById('boatId').value;
+                const boatData = {
+                    name: document.getElementById('boatName').value,
+                    model: document.getElementById('boatModel').value,
+                    type: document.getElementById('boatType').value,
+                    price: parseInt(document.getElementById('boatPrice').value),
+                    capacity: parseInt(document.getElementById('boatCapacity').value),
+                    image: document.getElementById('boatImage').value,
+                    description: document.getElementById('boatDescription').value
+                };
+
+                if (boatId) {
+                    // Edit existing
+                    const index = boats.findIndex(b => b.id === parseInt(boatId));
+                    if (index !== -1) {
+                        boats[index] = { ...boats[index], ...boatData };
+                    }
+                } else {
+                    // Add new
+                    boatData.id = Date.now();
+                    boats.push(boatData);
+                }
+
+                saveToStorage();
+                resetBoatForm();
+                renderAdminBoats();
+                renderBoats();
+                alert('Катер сохранен!');
+            });
+        }
+
+        function editBoat(id) {
+            const boat = boats.find(b => b.id === id);
+            if (!boat) return;
+
+            document.getElementById('boatId').value = boat.id;
+            document.getElementById('boatName').value = boat.name;
+            document.getElementById('boatModel').value = boat.model;
+            document.getElementById('boatType').value = boat.type;
+            document.getElementById('boatPrice').value = boat.price;
+            document.getElementById('boatCapacity').value = boat.capacity;
+            document.getElementById('boatImage').value = boat.image;
+            document.getElementById('boatDescription').value = boat.description;
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function deleteBoat(id) {
+            openDeleteModal(() => {
+                boats = boats.filter(b => b.id !== id);
+                saveToStorage();
+                renderAdminBoats();
+                renderBoats();
+            });
+        }
+
+        function resetBoatForm() {
+            document.getElementById('boatForm').reset();
+            document.getElementById('boatId').value = '';
+        }
+
+        function renderAdminBoats() {
+            const tbody = document.getElementById('adminBoatsTable');
+            tbody.innerHTML = boats.map(boat => `
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="px-4 py-3"><img src="${boat.image}" alt="${boat.name}" class="w-16 h-10 object-cover rounded"></td>
+                    <td class="px-4 py-3 font-medium">${boat.name}</td>
+                    <td class="px-4 py-3">${boat.model}</td>
+                    <td class="px-4 py-3">${getTypeLabel(boat.type)}</td>
+                    <td class="px-4 py-3">${boat.price.toLocaleString()} ₽</td>
+                    <td class="px-4 py-3">${boat.capacity} чел.</td>
+                    <td class="px-4 py-3">
+                        <button onclick="editBoat(${boat.id})" class="text-blue-500 hover:text-blue-700 mr-3">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="deleteBoat(${boat.id})" class="text-red-500 hover:text-red-700">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Admin Bookings
+        function renderAdminBookings() {
+            const tbody = document.getElementById('adminBookingsTable');
+            const statusColors = {
+                'pending': 'bg-yellow-100 text-yellow-800',
+                'confirmed': 'bg-green-100 text-green-800',
+                'cancelled': 'bg-red-100 text-red-800'
+            };
+            const statusLabels = {
+                'pending': 'В ожидании',
+                'confirmed': 'Подтверждено',
+                'cancelled': 'Отменено'
+            };
+
+            tbody.innerHTML = bookings.map(booking => `
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="px-4 py-3">#${booking.id}</td>
+                    <td class="px-4 py-3">
+                        <div class="font-medium">${booking.clientName}</div>
+                        <div class="text-sm text-gray-500">${booking.clientPhone}</div>
+                    </td>
+                    <td class="px-4 py-3">${booking.boatName}</td>
+                    <td class="px-4 py-3">${formatDate(booking.date)}</td>
+                    <td class="px-4 py-3">${booking.time} (${booking.duration}ч)</td>
+                    <td class="px-4 py-3 font-medium">${booking.total.toLocaleString()} ₽</td>
+                    <td class="px-4 py-3">
+                        <span class="px-2 py-1 rounded text-xs font-medium ${statusColors[booking.status]}">${statusLabels[booking.status]}</span>
+                    </td>
+                    <td class="px-4 py-3">
+                        <select onchange="updateBookingStatus(${booking.id}, this.value)" class="border rounded px-2 py-1 text-sm">
+                            <option value="pending" ${booking.status === 'pending' ? 'selected' : ''}>В ожидании</option>
+                            <option value="confirmed" ${booking.status === 'confirmed' ? 'selected' : ''}>Подтверждено</option>
+                            <option value="cancelled" ${booking.status === 'cancelled' ? 'selected' : ''}>Отменено</option>
+                        </select>
+                        <button onclick="deleteBooking(${booking.id})" class="text-red-500 hover:text-red-700 ml-2">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+            
+            // Refresh CRM segments when bookings change
+            if (document.getElementById('adminCrmTab').classList.contains('hidden') === false) {
+                renderCustomerSegments();
+            }
+        }
+
+        function updateBookingStatus(id, status) {
+            const booking = bookings.find(b => b.id === id);
+            if (booking) {
+                booking.status = status;
+                saveToStorage();
+                renderAdminBookings();
+                renderUserBookings();
+            }
+        }
+
+        function deleteBooking(id) {
+            openDeleteModal(() => {
+                bookings = bookings.filter(b => b.id !== id);
+                saveToStorage();
+                renderAdminBookings();
+                renderUserBookings();
+            });
+        }
+
+        // Admin Clients
+        function renderAdminClients() {
+            const tbody = document.getElementById('adminClientsTable');
+            
+            // Group bookings by client
+            const clients = {};
+            bookings.forEach(booking => {
+                const key = booking.clientEmail;
+                if (!clients[key]) {
+                    clients[key] = {
+                        name: booking.clientName,
+                        phone: booking.clientPhone,
+                        email: booking.clientEmail,
+                        bookings: 0,
+                        total: 0
+                    };
+                }
+                clients[key].bookings++;
+                clients[key].total += booking.total;
+            });
+
+            const clientList = Object.entries(clients).map(([email, data], index) => `
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="px-4 py-3">${index + 1}</td>
+                    <td class="px-4 py-3 font-medium">${data.name}</td>
+                    <td class="px-4 py-3">${data.phone}</td>
+                    <td class="px-4 py-3">${data.email}</td>
+                    <td class="px-4 py-3">${data.bookings}</td>
+                    <td class="px-4 py-3 font-medium">${data.total.toLocaleString()} ₽</td>
+                </tr>
+            `).join('');
+
+            tbody.innerHTML = clientList || '<tr><td colspan="6" class="px-4 py-8 text-center text-gray-500">Нет данных о клиентах</td></tr>';
+        }
+
+        // CRM Functions
+        function renderClientSelect() {
+            const select = document.getElementById('crmClientSelect');
+            
+            // Get unique clients from bookings
+            const clients = {};
+            bookings.forEach(booking => {
+                const key = booking.clientEmail;
+                if (!clients[key]) {
+                    clients[key] = {
+                        name: booking.clientName,
+                        email: booking.clientEmail,
+                        phone: booking.clientPhone
+                    };
+                }
+            });
+
+            // Generate options
+            const options = Object.values(clients).map(client => 
+                `<option value="${client.email}">${client.name} (${client.email})</option>`
+            ).join('');
+
+            select.innerHTML = '<option value="">-- Выберите клиента --</option>' + options;
+        }
+
+        function loadClientCommunications() {
+            const clientEmail = document.getElementById('crmClientSelect').value;
+            const historyContainer = document.getElementById('communicationHistory');
+            
+            if (!clientEmail) {
+                historyContainer.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-comment-dots text-3xl mb-2"></i>
+                        <p>Выберите клиента для просмотра истории</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Filter communications for this client
+            const clientCommunications = communications.filter(comm => comm.clientEmail === clientEmail);
+            
+            if (clientCommunications.length === 0) {
+                historyContainer.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-history text-3xl mb-2"></i>
+                        <p>Нет записей коммуникаций с этим клиентом</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Render communications
+            const communicationsHTML = clientCommunications.reverse().map(comm => {
+                const typeIcons = {
+                    'call': 'fa-phone',
+                    'email': 'fa-envelope',
+                    'message': 'fa-comment',
+                    'meeting': 'fa-handshake'
+                };
+                
+                const typeLabels = {
+                    'call': 'Звонок',
+                    'email': 'Email',
+                    'message': 'Сообщение',
+                    'meeting': 'Встреча'
+                };
+                
+                return `
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <div class="flex items-center">
+                                    <i class="fas ${typeIcons[comm.type]} text-blue-500 mr-2"></i>
+                                    <span class="font-medium">${typeLabels[comm.type]}</span>
+                                </div>
+                                <h4 class="font-bold mt-1">${comm.subject}</h4>
+                            </div>
+                            <span class="text-sm text-gray-500">${new Date(comm.date).toLocaleDateString('ru-RU')}</span>
+                        </div>
+                        <p class="mt-2 text-gray-700">${comm.content}</p>
+                        <div class="mt-3 text-sm text-gray-500">
+                            Запись добавлена: ${new Date(comm.createdAt).toLocaleString('ru-RU')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            historyContainer.innerHTML = communicationsHTML;
+        }
+
+        function addCommunication() {
+            const clientEmail = document.getElementById('crmClientSelect').value;
+            const type = document.getElementById('communicationType').value;
+            const subject = document.getElementById('communicationSubject').value;
+            const content = document.getElementById('communicationContent').value;
+
+            if (!clientEmail) {
+                alert('Пожалуйста, выберите клиента');
+                return;
+            }
+
+            if (!subject || !content) {
+                alert('Пожалуйста, заполните тему и содержание');
+                return;
+            }
+
+            // Find client details
+            const clientBooking = bookings.find(b => b.clientEmail === clientEmail);
+            if (!clientBooking) {
+                alert('Ошибка: клиент не найден');
+                return;
+            }
+
+            // Create communication record
+            const communication = {
+                id: Date.now(),
+                clientEmail: clientEmail,
+                clientName: clientBooking.clientName,
+                type: type,
+                subject: subject,
+                content: content,
+                date: new Date().toISOString().split('T')[0],
+                createdAt: new Date().toISOString()
+            };
+
+            communications.push(communication);
+            saveToStorage();
+
+            // Clear form
+            document.getElementById('communicationSubject').value = '';
+            document.getElementById('communicationContent').value = '';
+
+            // Reload communications
+            loadClientCommunications();
+
+            alert('Коммуникация успешно добавлена!');
+        }
+
+        function renderCustomerSegments() {
+            // Group bookings by client
+            const clients = {};
+            bookings.forEach(booking => {
+                const key = booking.clientEmail;
+                if (!clients[key]) {
+                    clients[key] = {
+                        name: booking.clientName,
+                        email: booking.clientEmail,
+                        bookings: 0,
+                        total: 0
+                    };
+                }
+                clients[key].bookings++;
+                clients[key].total += booking.total;
+            });
+
+            // Categorize clients
+            let vipCount = 0;
+            let regularCount = 0;
+            let newCount = 0;
+
+            Object.values(clients).forEach(client => {
+                if (client.total >= 50000) {
+                    vipCount++;
+                } else if (client.bookings >= 3) {
+                    regularCount++;
+                } else {
+                    newCount++;
+                }
+            });
+
+            // Update UI
+            document.getElementById('vipCount').textContent = vipCount;
+            document.getElementById('regularCount').textContent = regularCount;
+            document.getElementById('newCount').textContent = newCount;
+        }
+
+        // Delete Modal
+        function openDeleteModal(callback) {
+            deleteCallback = callback;
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('active');
+            deleteCallback = null;
+        }
+
+        document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+            if (deleteCallback) {
+                deleteCallback();
+            }
+            closeDeleteModal();
+        });
+
+        // Close modals on outside click
+        document.getElementById('bookingModal').addEventListener('click', function(e) {
+            if (e.target === this) closeBookingModal();
+        });
+
+        document.getElementById('deleteModal').addEventListener('click', function(e) {
+            if (e.target === this) closeDeleteModal();
+        });
+    </script>
+</body>
+</html>
